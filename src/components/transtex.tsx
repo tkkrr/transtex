@@ -15,35 +15,61 @@ const MainArea = styled.div`
 
 const RightArrow = styled.div`
     background-color: #666;
-    height: 24px;
-    width: 32px;
-    margin-left: 16px;
-    margin-right: 32px;
+    height: 16px;
+    width: 24px;
+    margin-left: 12px;
+    margin-right: 24px;
 
     &::after{
         content: "";
         position: relative;
         display: block;
-        right: -32px;
+        right: -24px;
         bottom: 6px;
         height: 0;
         width: 0;
         background-color: transparent;
-        border: 18px solid transparent;
+        border: 14px solid transparent;
         border-left: 18px solid #666;
     }
 `
 
+const TextAreaContainer = styled.div`
+    width: 28%;
+    margin: 24px auto;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`
+
 const StyledTextArea = styled.textarea`
+    width: 100%;
+    height: calc(100% - 12px * 2 );
+    padding: 12px;
     border-radius: 12px;
     border: none;
-    box-shadow: 2px 2px 12px #ccc;
-    width: 35%;
-    padding: 12px;
-    margin: 48px auto;
+    box-shadow: 2px 2px 12px #ccc;  
     font-size: 16px;
     resize: none;
-    align-self: stretch;
+    outline: none;
+`
+
+const CopyClipButton = styled.button`
+    width: 100%;
+    height: 32px;
+    font-size: 16px;
+    background-color: #33ccee;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    margin-top: 16px;
+    box-shadow: 2px 2px 4px #999;
+    transition: opacity 0.4s;
+    &:hover {
+        opacity: 0.6;
+    }
 `
 
 const Centering = styled.div`
@@ -55,37 +81,35 @@ const Centering = styled.div`
 
 export default () => {
 
-    const [transInput, inputUpdate] = React.useState("")
+    const [transStrings, stringsUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
-    const [transMode, changeMode] = React.useState("chomp" as "chomp" | "tex")
     
-    const trans2tex = (mode: "chomp" | "tex", input?: string) => {
+
+    const trans2tex = (input?: string) => {
         if( !input ) {
             outputUpdate("")
+            stringsUpdate("")
             return
         }
-        const out = input.replace (/(\n)/g, " ")
-        
-        console.log(transMode)
-        console.log(transInput)
+        const out = input.replace(/(\n)/g, " ")
+        const sentences = out.split(". ")
 
-        if(mode === "chomp"){
-            outputUpdate(out)
-        }else if(mode === "tex"){
-            chompPeriod(out)
-        }
+        stringsUpdate( sentences.join(".\n\n") )
+        formatTemplate(sentences)
     }
 
-    const chompPeriod = (input: string) => {
-        const sentences = input.split(". ")
-        const out = sentences.map( item => {
-            return `\\newsentence
+
+    const formatTemplate = (input: string[]) => {
+        const out = [] as string[]
+        input.forEach( item => {
+            out.push(`\\newsentence
 {${item}${item.slice(-1) === "." ? "" : "."}}
-{}`
+{}`)
         })
         outputUpdate(out.join("\n\n"))
     }
     
+
     const notify = (status: "info" | "error" | "success", message: string) => {
         switch(status){
             case "info":
@@ -120,6 +144,7 @@ export default () => {
         }
     }
 
+
     const copyClip = (string: string) => {
         var temp = document.createElement('textarea');
 
@@ -144,53 +169,40 @@ export default () => {
         )
     }
 
-    return <MainArea>
-        <StyledTextArea 
-            placeholder={"変換したい文章"}
-            onChange={e => {
-                inputUpdate(e.target.value)
-                trans2tex(transMode, e.target.value)
-            }}
-        />
+    return <MainArea >
+        <TextAreaContainer>
+            <StyledTextArea 
+                placeholder={"変換したい文章"}
+                onChange={e => {
+                    trans2tex(e.target.value)
+                }}
+            />
+        </TextAreaContainer>
         <Centering>
-            <p>{transMode}</p>
             <RightArrow/>
-            <br/>
-            <div>
-                <p>モード変更</p>
-                <button 
-                    onClick={() => {
-                        changeMode("chomp")
-                        trans2tex("chomp", transInput)
-                        notify(
-                            "info", 
-                            "Change to Chomp output mode"
-                        )
-                    }}>
-                    chomp
-                </button>
-                <button
-                    onClick={ () => {
-                        changeMode("tex")
-                        trans2tex("tex", transInput)
-                        notify(
-                            "info", 
-                            "Change to LaTeX output mode"
-                        )
-                    }}>
-                    tex
-                </button>
-            </div>
-            <button onClick={() => copyClip(transOutput)}>
-                変換後の文章をコピー
-            </button>
             <ToastContainer />
         </Centering>
-        <StyledTextArea 
-            placeholder={"変換後の文章"}
-            value={transOutput}
-            readOnly={true}
-            id={"output"}
-        />
+        <TextAreaContainer>
+            <StyledTextArea 
+                placeholder={"中間文章"}
+                value={transStrings}
+                readOnly={true}
+                id={"strings"}
+            />
+            <CopyClipButton onClick={() => copyClip(transStrings)}>
+                Copy to clipboard
+            </CopyClipButton>
+        </TextAreaContainer>
+        <TextAreaContainer>
+            <StyledTextArea 
+                placeholder={"変換後の文章"}
+                value={transOutput}
+                readOnly={true}
+                id={"output"}
+            />
+            <CopyClipButton onClick={() => copyClip(transOutput)}>
+                Copy to clipboard
+            </CopyClipButton>
+        </TextAreaContainer>
     </MainArea>
 }
