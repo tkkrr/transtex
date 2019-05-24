@@ -1,7 +1,7 @@
 import * as React from "react"
 import styled from "styled-components"
 
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer, toast, Slide } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 const MainArea = styled.div`
@@ -55,31 +55,68 @@ const Centering = styled.div`
 
 export default () => {
 
+    const [transInput, inputUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
+    const [transMode, changeMode] = React.useState("chomp" as "chomp" | "tex")
     
-    const trans2tex = (input?: string) => {
+    const trans2tex = (mode: "chomp" | "tex", input?: string) => {
         if( !input ) {
             outputUpdate("")
             return
         }
         const out = input.replace (/(\n)/g, " ")
-        outputUpdate(out)
+        
+        console.log(transMode)
+        console.log(transInput)
+
+        if(mode === "chomp"){
+            outputUpdate(out)
+        }else if(mode === "tex"){
+            chompPeriod(out)
+        }
     }
 
+    const chompPeriod = (input: string) => {
+        const sentences = input.split(". ")
+        const out = sentences.map( item => {
+            return `\\newsentence
+{${item}${item.slice(-1) === "." ? "" : "."}}
+{}`
+        })
+        outputUpdate(out.join("\n\n"))
+    }
     
-    const notify = (success: boolean) => {
-        if(success){
-            toast.success("Copy to Clipboard is Successful !!", {
-                pauseOnHover: false,
-                autoClose: 3000,
-                position: toast.POSITION.BOTTOM_RIGHT
-            })
-        }else{
-            toast.error("Oops... Something wrong...", {
-                pauseOnHover: false,
-                autoClose: 3000,
-                position: toast.POSITION.BOTTOM_RIGHT
-            })
+    const notify = (status: "info" | "error" | "success", message: string) => {
+        switch(status){
+            case "info":
+                toast.info(message, {
+                    transition: Slide,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    position: toast.POSITION.BOTTOM_RIGHT
+                })
+                break
+            case "error":
+                toast.error(message, {
+                    transition: Slide,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    position: toast.POSITION.BOTTOM_RIGHT
+                })
+                break
+            case "success":
+                toast.success(message, {
+                    transition: Slide,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    position: toast.POSITION.BOTTOM_RIGHT
+                })
+                break
+            default:
+                break
         }
     }
 
@@ -100,23 +137,50 @@ export default () => {
         temp.blur();
         document.body.removeChild(temp);
 
-        notify(result)
-
-        // if(result) {
-        //     alert("copy to clipboard")
-        // }else{
-        //     alert("Oops... something wring...")
-        // }
+        notify(
+            result ? "success" : "error", 
+            result ? "Copy to Clipboard is Successful !!"
+                   : "Oops... Something wrong..."
+        )
     }
 
     return <MainArea>
         <StyledTextArea 
             placeholder={"変換したい文章"}
-            onChange={e => trans2tex(e.target.value)}
+            onChange={e => {
+                inputUpdate(e.target.value)
+                trans2tex(transMode, e.target.value)
+            }}
         />
         <Centering>
+            <p>{transMode}</p>
             <RightArrow/>
             <br/>
+            <div>
+                <p>モード変更</p>
+                <button 
+                    onClick={() => {
+                        changeMode("chomp")
+                        trans2tex("chomp", transInput)
+                        notify(
+                            "info", 
+                            "Change to Chomp output mode"
+                        )
+                    }}>
+                    chomp
+                </button>
+                <button
+                    onClick={ () => {
+                        changeMode("tex")
+                        trans2tex("tex", transInput)
+                        notify(
+                            "info", 
+                            "Change to LaTeX output mode"
+                        )
+                    }}>
+                    tex
+                </button>
+            </div>
             <button onClick={() => copyClip(transOutput)}>
                 変換後の文章をコピー
             </button>
