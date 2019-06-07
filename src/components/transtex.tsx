@@ -97,6 +97,9 @@ export default () => {
 
     const [transStrings, stringsUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
+
+    const agent = window.navigator.userAgent.toLowerCase();
+    const chrome = (agent.indexOf('chrome') !== -1) && (agent.indexOf('edge') === -1)  && (agent.indexOf('opr') === -1)
     
     const trans2tex = (input?: string) => {
         if( !input ) {
@@ -105,8 +108,14 @@ export default () => {
             return
         }
         const out = input.replace(/(\n)/g, " ")
-        const sentences = out.split(". ")
 
+        let regStr: RegExp
+        if(chrome){
+            regStr = new RegExp("(?<!al)\\.")
+        } else {
+            regStr = new RegExp("\\. ")
+        }
+        const sentences = out.split(regStr)
         stringsUpdate( sentences.join(".\n\n") )
         formatTemplate(sentences)
     }
@@ -128,7 +137,6 @@ export default () => {
         const transURL = `https://translate.google.com/?hl=ja#view=home&op=translate&sl=en&tl=ja&text=${transStr}`
         window.open(transURL, '_blank')
     }
-    
 
     const notify = (status: "info" | "error" | "success", message: string) => {
         switch(status){
