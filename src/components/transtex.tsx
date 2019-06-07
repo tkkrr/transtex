@@ -104,11 +104,12 @@ export default () => {
 
     const [transStrings, stringsUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
+    let isChrome = false
 
-    /** ページを何で開いているかを判定するための情報を格納する */
-    const agent = window.navigator.userAgent.toLowerCase()
-    /** Chromeだけが最新の正規表現に対応しているので，仕分けを行う */
-    const chrome = (agent.indexOf('chrome') !== -1) && (agent.indexOf('edge') === -1)  && (agent.indexOf('opr') === -1)
+    React.useEffect(() => {
+        const agent = window.navigator.userAgent.toLowerCase()
+        isChrome = (agent.indexOf('chrome') !== -1) && (agent.indexOf('edge') === -1)  && (agent.indexOf('opr') === -1)
+    })
     
 
     /**
@@ -124,7 +125,7 @@ export default () => {
         const out = input.replace(/(\n)/g, " ")
 
         let regStr: RegExp
-        if(chrome){
+        if(isChrome){
             regStr = new RegExp("(?<!al)\\. ")
         } else {
             regStr = new RegExp("\\. ")
