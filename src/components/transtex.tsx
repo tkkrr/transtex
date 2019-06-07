@@ -140,8 +140,12 @@ export default () => {
      * @param input splitした文章群
      */
     const formatTemplate = (input: string[]) => {
+        const processData = input.map( item => {
+            const check1 = item.replace(/(%|％)/g, "\\%")
+            return check1
+        } )
         const out = [] as string[]
-        input.forEach( item => {
+        processData.forEach( item => {
             out.push(`\\newsentence
 {${item}${item.slice(-1) === "." ? "" : "."}}
 {}`)
