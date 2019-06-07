@@ -13,6 +13,7 @@ const MainArea = styled.div`
     justify-content: center;
 `
 
+/** 右矢印を表示する */
 const RightArrow = styled.div`
     background-color: #666;
     height: 16px;
@@ -34,6 +35,7 @@ const RightArrow = styled.div`
     }
 `
 
+/** テキストエリアのコンテナ． */
 const TextAreaContainer = styled.div`
     width: 28%;
     margin: 24px auto;
@@ -44,6 +46,7 @@ const TextAreaContainer = styled.div`
     align-items: center;
 `
 
+/** パディング管理がされているテキストエリアの描画 */
 const StyledTextArea = styled.textarea`
     width: 100%;
     height: 100%;
@@ -57,6 +60,7 @@ const StyledTextArea = styled.textarea`
     box-sizing: border-box;
 `
 
+/** flexboxのレイアウトを使用 */
 const HorizontalFlex = styled.div`
     display: flex;
     flex-direction: row;
@@ -65,6 +69,7 @@ const HorizontalFlex = styled.div`
     margin-bottom: 16px;
 `
 
+/** コピーボタン */
 const CopyClipButton = styled.button`
     width: 100%;
     height: 32px;
@@ -81,11 +86,13 @@ const CopyClipButton = styled.button`
     }
 `
 
+/** Go to Google Translation ボタン */
 const GoogleButton = styled(CopyClipButton)`
     background-color: #3366aa;
     margin-left: 24px;
 `
 
+/** 中心寄せを行う */
 const Centering = styled.div`
     display: flex;
     flex-direction: column;
@@ -98,9 +105,16 @@ export default () => {
     const [transStrings, stringsUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
 
-    const agent = window.navigator.userAgent.toLowerCase();
+    /** ページを何で開いているかを判定するための情報を格納する */
+    const agent = window.navigator.userAgent.toLowerCase()
+    /** Chromeだけが最新の正規表現に対応しているので，仕分けを行う */
     const chrome = (agent.indexOf('chrome') !== -1) && (agent.indexOf('edge') === -1)  && (agent.indexOf('opr') === -1)
     
+
+    /**
+     * 文字列を受け取り，それを後の処理に投げるアクション
+     * @param input 入力文字列．nullの場合は初期化を行う
+     */
     const trans2tex = (input?: string) => {
         if( !input ) {
             outputUpdate("")
@@ -121,6 +135,10 @@ export default () => {
     }
 
 
+    /**
+     * 入力をテンプレートTeX形式に変換する
+     * @param input splitした文章群
+     */
     const formatTemplate = (input: string[]) => {
         const out = [] as string[]
         input.forEach( item => {
@@ -131,6 +149,11 @@ export default () => {
         outputUpdate(out.join("\n\n"))
     }
 
+
+    /**
+     * Google翻訳へのリンクへ飛ぶ
+     * @param input 翻訳文字列
+     */
     const gotoGoogleTranslate = (input?: string) => {
         if( !input )return
         const transStr = encodeURIComponent(input)
@@ -138,6 +161,12 @@ export default () => {
         window.open(transURL, '_blank')
     }
 
+
+    /**
+     * トースト通知を行う
+     * @param status メッセージの種類
+     * @param message メッセージ本文
+     */
     const notify = (status: "info" | "error" | "success", message: string) => {
         switch(status){
             case "info":
@@ -173,6 +202,10 @@ export default () => {
     }
 
 
+    /**
+     * クリップボードに文字列をコピーする
+     * @param string コピーする文字列
+     */
     const copyClip = (string: string) => {
         var temp = document.createElement('textarea');
 
