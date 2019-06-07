@@ -18,6 +18,6 @@ const Footer = styled.footer`
 export default () => {
     return <Footer>
         <p>Created by Tucker.</p>
-        <p>Last Modified 2019 May.</p>
+        <p>Last Modified 2019 June.</p>
     </Footer>
 }

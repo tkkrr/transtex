@@ -46,7 +46,7 @@ const TextAreaContainer = styled.div`
 
 const StyledTextArea = styled.textarea`
     width: 100%;
-    height: calc(100% - 12px * 2 );
+    height: 100%;
     padding: 12px;
     border-radius: 12px;
     border: none;
@@ -54,6 +54,15 @@ const StyledTextArea = styled.textarea`
     font-size: 16px;
     resize: none;
     outline: none;
+    box-sizing: border-box;
+`
+
+const HorizontalFlex = styled.div`
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 16px;
 `
 
 const CopyClipButton = styled.button`
@@ -64,12 +73,17 @@ const CopyClipButton = styled.button`
     border: none;
     border-radius: 4px;
     color: white;
-    margin-top: 16px;
+    padding: 4px 16px;
     box-shadow: 2px 2px 4px #999;
     transition: opacity 0.4s;
     &:hover {
         opacity: 0.6;
     }
+`
+
+const GoogleButton = styled(CopyClipButton)`
+    background-color: #3366aa;
+    margin-left: 24px;
 `
 
 const Centering = styled.div`
@@ -84,7 +98,6 @@ export default () => {
     const [transStrings, stringsUpdate] = React.useState("")
     const [transOutput, outputUpdate] = React.useState("")
     
-
     const trans2tex = (input?: string) => {
         if( !input ) {
             outputUpdate("")
@@ -107,6 +120,13 @@ export default () => {
 {}`)
         })
         outputUpdate(out.join("\n\n"))
+    }
+
+    const gotoGoogleTranslate = (input?: string) => {
+        if( !input )return
+        const transStr = encodeURIComponent(input)
+        const transURL = `https://translate.google.com/?hl=ja#view=home&op=translate&sl=en&tl=ja&text=${transStr}`
+        window.open(transURL, '_blank')
     }
     
 
@@ -183,26 +203,33 @@ export default () => {
             <ToastContainer />
         </Centering>
         <TextAreaContainer>
+            <HorizontalFlex>
+                <CopyClipButton onClick={() => copyClip(transStrings)}>
+                    Copy
+                </CopyClipButton>
+                <GoogleButton onClick={() => gotoGoogleTranslate(transStrings)}>
+                    Translate
+                </GoogleButton>
+            </HorizontalFlex>
             <StyledTextArea 
                 placeholder={"中間文章"}
                 value={transStrings}
                 readOnly={true}
                 id={"strings"}
             />
-            <CopyClipButton onClick={() => copyClip(transStrings)}>
-                Copy to clipboard
-            </CopyClipButton>
         </TextAreaContainer>
         <TextAreaContainer>
+            <HorizontalFlex>
+                <CopyClipButton onClick={() => copyClip(transOutput)}>
+                    Copy
+                </CopyClipButton>
+            </HorizontalFlex>
             <StyledTextArea 
                 placeholder={"変換後の文章"}
                 value={transOutput}
                 readOnly={true}
                 id={"output"}
             />
-            <CopyClipButton onClick={() => copyClip(transOutput)}>
-                Copy to clipboard
-            </CopyClipButton>
         </TextAreaContainer>
     </MainArea>
 }
