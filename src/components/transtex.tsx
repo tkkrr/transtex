@@ -126,7 +126,7 @@ export default () => {
 
         let regStr: RegExp
         if(isChrome){
-            regStr = new RegExp("(?<!al)\\. ")
+            regStr = new RegExp("(?<!al.)(?<!e.g)(?<!i.e)\\. ")
         } else {
             regStr = new RegExp("\\. ")
         }
