@@ -151,7 +151,8 @@ export default class Minutes extends React.Component<{},MinutesState> {
 
                     this.setState({
                         file: upload_file,
-                        fileContent: formatter1.join("\n\n")
+                        fileContent: formatter1.join(""),
+                        date: new Date( parseInt( upload_file.name.slice(-12,-8) ), parseInt( upload_file.name.slice(-8,-6) )-1, parseInt( upload_file.name.slice(-6,-4) ))
                     })
                 }
                 reader.readAsText(upload_file)
@@ -201,14 +202,15 @@ ${this.state.fileContent}
                         <tbody>
                         <tr>
                             <td>
-                                日時
+                                TeX
                             </td>
                             <td>
-                                <DayPickerInput
-                                    format="YYYY/MM/DD"
-                                    onDayChange={day => this.setState({ date: day })}
-                                    value={`${this.state.date.getFullYear()}年${this.state.date.getMonth()+1}月${this.state.date.getDate()}日(${weekday[this.state.date.getDay()]})`}
-                                />
+                                <FileInputLabel htmlFor="file_uploader">
+                                    {this.state.file ? this.state.file.name : "TeXファイルを選択"}
+                                    <input type="file" id="file_uploader" style={{display: "none"}}
+                                        onChange={e => this.handleFileUpload(e.target.files)}
+                                    />
+                                </FileInputLabel>
                             </td>
                         </tr>
                         <tr>
@@ -257,19 +259,6 @@ ${this.state.fileContent}
                                     value={this.state.minutes}
                                     onChange={e => this.handleInputChange("minutes", e.target.value)}
                                 />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                Tex
-                            </td>
-                            <td>
-                                <FileInputLabel htmlFor="file_uploader">
-                                    {this.state.file ? this.state.file.name : "TeXファイルを選択"}
-                                    <input type="file" id="file_uploader" style={{display: "none"}}
-                                        onChange={e => this.handleFileUpload(e.target.files)}
-                                    />
-                                </FileInputLabel>
                             </td>
                         </tr>
                         </tbody>
