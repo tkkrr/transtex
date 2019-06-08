@@ -18,6 +18,63 @@ interface MinutesState {
     fileContent: string,
 }
 
+// 文字列に対して{}の対応が取れているインデックス(入力文字列からステップした回数)を返す
+const stackCheck = (str: string, offset=0): {step: number, correct: boolean} => {
+    const count = [] as string[]
+    let steps = 1;
+
+    for( let i = 0; i < offset; i++ ){
+        count.push("{")
+    }
+    
+    for( let i = 0; i < str.length; i++ ){
+        if( str[i] === "{" ){
+            count.push("{")
+        }else if( str[i] === "}" ){
+            if( count.length > 0 ){
+                count.pop()
+                if(count.length === 0){
+                    return {
+                        step: steps,
+                        correct: true
+                    }
+                }
+            }
+        }
+        steps++
+    }
+
+    // 最後まで来てしまった時は{}がない状態 or {}の対応が取れていない状態
+    if( count.length === 0 ){
+        return {
+            step: steps,
+            correct: true
+        }
+    }else{
+        return {
+            step: steps,
+            correct: false
+        }
+    }
+}
+
+// {}対応の取れているペアを取得する．
+const checkBracesSplit = (str: string): string[] => {
+    let index = 0
+    let stepIndex = 0
+    let tmp = str
+    const stack = [] as string[]
+    while(true){
+        if(index >= str.length)break
+        const stepParam = stackCheck(tmp)
+        stepIndex = stepParam.step
+        stack.push( str.substring(index, index+stepIndex) ) 
+        index += stepIndex
+        tmp = str.substring(index)
+    }
+    return stack
+}
+
 export default class Minutes extends React.Component<{},MinutesState> {
     // const [date, changeDate] = React.useState(new Date())
     constructor(props: any){
@@ -129,22 +186,40 @@ export default class Minutes extends React.Component<{},MinutesState> {
                 reader.onload = () => {
                     const content = typeof reader.result === "string" ? reader.result : ""
 
-                    const formatter1 = content.split("\n").map( item => {
+                    const formatter1 = content
+                    .split("\n")
+                    .map( item => {
+                        // コメントの削除
                         let remove_flag = false
                         remove_flag = item.search(/^%/) !== -1
                         return remove_flag ? "" : item
-                    }).filter( item => {
+                    })
+                    .join("\n")
+
+                    // タイトル部分のいらないところを削除
+                    const formatter2 = formatter1
+                    .substring(formatter1.search(/\\newsentence|\\newboldsentence/))
+                    .split("\n")
+                    .filter( item => {
+                        // 関係のない行，英文行，空白行を削除
                         return !!item 
-                            && item.search(/^(\\newsentence|\\newboldsentence|\{)/) !== -1
+                            && item.search(/^[^\\]/) !== -1
                             && item.search(/[亜-熙ぁ-んァ-ヶ]/) !== -1
-                    } ).map( (item, index) => {
+                    } )
+                    .join("")
+
+                    // {}対応の取れている日本語訳で切り出し
+                    const formatter3 = checkBracesSplit(formatter2)
+                    .map( (item, index) => {
+                        // \ulのある部分を個別に処理
                         const underlinetags = [] as string[]
                         const text = item.replace(/\\ul{.*?}/g, match => {
                             const ulStr = match.slice(4,-1)
                             underlinetags.push(ulStr)
                             return ulStr
-                        }).replace(/({|})/g, "")
-
+                        })
+                        .replace(/({|})/g, "") //不要な{}を削除
+                        
                         if(underlinetags){
                             let tmp = `(${index+1})\n対訳：${text}\n改善：\n\n`
                             underlinetags.forEach( item => {
@@ -158,7 +233,7 @@ export default class Minutes extends React.Component<{},MinutesState> {
 
                     this.setState({
                         file: upload_file,
-                        fileContent: formatter1.join(""),
+                        fileContent: formatter3.join(""),
                         date: new Date( parseInt( upload_file.name.slice(-12,-8) ), parseInt( upload_file.name.slice(-8,-6) )-1, parseInt( upload_file.name.slice(-6,-4) ))
                     })
                 }
