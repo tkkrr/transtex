@@ -219,7 +219,7 @@ export default class Minutes extends React.Component<{},MinutesState> {
                             return ulStr
                         })
                         .replace(/({|})/g, "") //不要な{}を削除
-                        
+
                         if(underlinetags){
                             let tmp = `(${index+1})\n対訳：${text}\n改善：\n\n`
                             underlinetags.forEach( item => {
@@ -277,6 +277,7 @@ ${this.state.fileContent}
             <SEO
                 title="Minutes"
                 path="/minutes"
+                description="議事録のためのフォーマット．For the IPLAB Utility"
             />
             <MainArea>
                 <TextAreaContainer>
