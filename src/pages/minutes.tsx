@@ -4,12 +4,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import Layout from '../components/layout'
 import SEO from '../components/seo'
-import { MainArea, TextAreaContainer, StyledTextArea, HorizontalFlex, Centering, LineInput, StyledTable, FileInputLabel, CopyClipButton, RightArrow } from '../components/styled'
-
-
-import DayPickerInput from 'react-day-picker/DayPickerInput'
-import 'react-day-picker/lib/style.css'
-import '../day_picker.scss'
+import { MainArea, TextAreaContainer, StyledTextArea, HorizontalFlex, LineInput, StyledTable, FileInputLabel, CopyClipButton, RightArrow } from '../components/styled'
 
 const weekday = ["日","月","火","水","木","金","土"]
 
@@ -143,10 +138,22 @@ export default class Minutes extends React.Component<{},MinutesState> {
                             && item.search(/^(\\newsentence|\\newboldsentence|\{)/) !== -1
                             && item.search(/[亜-熙ぁ-んァ-ヶ]/) !== -1
                     } ).map( (item, index) => {
-                        const text = item.replace(/({|})/g, "")
-                        return `(${index+1})
-対訳：　${text}
-改善：　`
+                        const underlinetags = [] as string[]
+                        const text = item.replace(/\\ul{.*?}/g, match => {
+                            const ulStr = match.slice(4,-1)
+                            underlinetags.push(ulStr)
+                            return ulStr
+                        }).replace(/({|})/g, "")
+
+                        if(underlinetags){
+                            let tmp = `(${index+1})\n対訳：${text}\n改善：\n\n`
+                            underlinetags.forEach( item => {
+                                tmp += `下線部：${item}\n\n`
+                            } )
+                            return tmp
+                        }else{
+                            return `(${index+1})\n対訳：${text}\n改善：\n\n`
+                        }
                     } )
 
                     this.setState({
