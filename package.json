@@ -25,6 +25,7 @@
     "gatsby-transformer-sharp": "^2.1.19",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
+    "react-day-picker": "^7.3.0",
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
     "react-toastify": "^5.1.1",
