@@ -5,7 +5,9 @@
   "main": "index.tsx",
   "scripts": {
     "start": "gatsby develop",
-    "build": "gatsby build"
+    "build": "gatsby build",
+    "lambda:install": "npm --prefix ./src/lambda install ./src/lambda/",
+    "build:lambda": "netlify-lambda build ./src/lambda"
   },
   "author": "tucker",
   "license": "ISC",
@@ -23,6 +25,7 @@
     "gatsby-plugin-typescript": "^2.0.14",
     "gatsby-source-filesystem": "^2.0.37",
     "gatsby-transformer-sharp": "^2.1.19",
+    "netlify-lambda": "^1.5.0",
     "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
