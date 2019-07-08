@@ -33,8 +33,8 @@ exports.handler = (event, context, callback) => {
         data: { 
             key: KEY,
             name: NAME,
-            text: "Goodbye, Bob."
-            // text: event.queryStringParameters.text
+            // text: "Goodbye, Bob."
+            text: event.queryStringParameters.text
         },
     }
     
