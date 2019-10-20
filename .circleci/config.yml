@@ -27,13 +27,17 @@ jobs:
                 name: key-scan
                 command: ssh-keyscan cucumber.iplab.cs.tsukuba.ac.jp >> ~/.ssh/known_hosts
 
-            - run:
-                name: install rsync
-                command: sudo apt install -y rsync
-
             - deploy:
                 name: deployment
-                command: rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
+                command: scp -r ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
+
+            # - run:
+            #     name: install rsync
+            #     command: sudo apt install -y rsync
+
+            # - deploy:
+            #     name: deployment
+            #     command: rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
   
   # deploy:
   #   machine:
