@@ -20,12 +20,11 @@ jobs:
           command: npm run build
   
   deploy:
-    machine:
-      enabled: true
     steps:
       - add_ssh_keys:  
         fingerprints:  
           - "1b:f2:ac:cf:7d:41:22:cd:01:27:5f:d4:3e:47:5f:6c"
+      
       - run:  
         name: Start ssh-keyscan  
         command: |  
