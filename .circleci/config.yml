@@ -15,37 +15,39 @@ jobs:
           name: install-npm-wee
           command: npm install
       
-      - run: 
-          name: build
-          command: npm run build
-  
-  deploy:
-    steps:
-      - add_ssh_keys:  
-        fingerprints:  
-          - "1b:f2:ac:cf:7d:41:22:cd:01:27:5f:d4:3e:47:5f:6c"
+      # - run: 
+      #     name: build
+      #     command: npm run build
+
+      - add_ssh_keys:
+          fingerprints:
+            - "1b:f2:ac:cf:7d:41:22:cd:01:27:5f:d4:3e:47:5f:6c"
       
-      - run:  
-        name: Start ssh-keyscan  
-        command: |  
-          ssh-keyscan cucumber.iplab.cs.tsukuba.ac.jp >> ~/.ssh/known_hosts
-
-      - deploy:  
-        name: Start master deploy  
-        command: |  
-          if [ "${CIRCLE_BRANCH}" == "master" ]; then  
-              rsync -av --delete --rsh="ssh" --exclude='.git' --exclude='.circleci' ./ ${USER_NAME}@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
-          fi  
-      # - run: ssh takakura@cucumber.iplab.cs.tsukuba.ac.jp "~/deploy.sh"
-
-workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build
       - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+          name: deployment
+          command: |
+            npm run build
+            ssh-keyscan cucumber.iplab.cs.tsukuba.ac.jp >> ~/.ssh/known_hosts
+            sudo apt install -y rsync
+            rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
+  
+  # deploy:
+  #   machine:
+  #     enabled: true
+  #   steps:
+  #     - run:
+  #       name: SSH を介してデプロイ
+  #       command: |
+  #         ssh takakura@cucumber.iplab.cs.tsukuba.ac.jp "~/deploy.sh"
+
+# workflows:
+#   version: 2
+#   build-and-deploy:
+#     jobs:
+#       - build
+#       - deploy:
+#           requires:
+#             - build
+#           filters:
+#             branches:
+#               only: master
