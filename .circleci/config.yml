@@ -1,35 +1,39 @@
 version: 2
 jobs:
-  build:
-    working_directory: ~/repo
-    docker: 
-      - image: circleci/node:10.15.3 
-    steps:
-      - checkout
+    build:
+        working_directory: ~/repo
+        docker: 
+            - image: circleci/node:10.15.3 
+        steps:
+            - checkout
 
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
+            - run:
+                name: update-npm
+                command: 'sudo npm install -g npm@latest'
       
-      - run:
-          name: install-npm-wee
-          command: npm install
-      
-      # - run: 
-      #     name: build
-      #     command: npm run build
+            - run:
+                name: install-npm-wee
+                command: npm install
 
-      - add_ssh_keys:
-          fingerprints:
-            - "1b:f2:ac:cf:7d:41:22:cd:01:27:5f:d4:3e:47:5f:6c"
+            - run: 
+                name: build
+                command: npm run build
+
+            - add_ssh_keys:
+                fingerprints:
+                    - "1b:f2:ac:cf:7d:41:22:cd:01:27:5f:d4:3e:47:5f:6c"
       
-      - deploy:
-          name: deployment
-          command: |
-            npm run build
-            ssh-keyscan cucumber.iplab.cs.tsukuba.ac.jp >> ~/.ssh/known_hosts
-            sudo apt install -y rsync
-            rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
+            - run:
+                name: key-scan
+                command: ssh-keyscan cucumber.iplab.cs.tsukuba.ac.jp >> ~/.ssh/known_hosts
+
+            - run:
+                name: install rsync
+                command: sudo apt install -y rsync
+
+            - deploy:
+                name: deployment
+                command: rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
   
   # deploy:
   #   machine:
