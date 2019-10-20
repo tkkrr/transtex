@@ -46,7 +46,7 @@ jobs:
 
             - deploy:
                 name: deployment
-                command: rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/
+                command: rsync -vc ./public/ takakura@cucumber.iplab.cs.tsukuba.ac.jp:/home/takakura/public/
   
   # deploy:
   #   machine:
