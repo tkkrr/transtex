@@ -44,6 +44,7 @@ export const TextAreaContainer = styled.div`
 
 /** パディング管理がされているテキストエリアの描画 */
 export const StyledTextArea = styled.textarea`
+    opacity: 0.7;
     width: 100%;
     height: 100%;
     padding: 12px;
@@ -65,6 +66,23 @@ export const HorizontalFlex = styled.div`
     margin-bottom: 16px;
 `
 
+/** StyledTextAreaにPlaceHolderを表示するために使用 */
+export const PlaceHolderForStyledTextArea = styled.div`
+    position: absolute;
+    font-size: 14px;
+    font-weight: normal;
+    width: 24%;
+    height: calc(100% - 154px * 2);
+    p {
+        line-height: 1.4;
+        margin-bottom: 1rem;
+    }
+    ul {
+        margin-left: 32px;
+        line-height: 1.4;
+    }
+`
+
 /** コピーボタン */
 export const CopyClipButton = styled.button`
     width: 100%;
@@ -76,7 +94,8 @@ export const CopyClipButton = styled.button`
     color: white;
     padding: 4px 16px;
     box-shadow: 2px 2px 4px #999;
-    transition: opacity 0.4s;
+    transition-duration: 0.4s;
+    transition-property: opacity, background-color;
     &:hover {
         opacity: 0.6;
     }
@@ -86,6 +105,16 @@ export const CopyClipButton = styled.button`
 export const GoogleButton = styled(CopyClipButton)`
     background-color: #3366aa;
     margin-left: 24px;
+`
+
+/** 入力文字列をclearするボタン */
+export const ClearButton = styled(CopyClipButton)`
+    background-color: white;
+    color: grey;
+    &:hover {
+        background-color: ghostwhite;
+        opacity: 1;
+    }
 `
 
 /** 中心寄せを行う */
