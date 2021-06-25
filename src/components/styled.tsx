@@ -101,9 +101,9 @@ export const CopyClipButton = styled.button`
     }
 `
 
-/** Go to Google Translation ボタン */
-export const GoogleButton = styled(CopyClipButton)`
-    background-color: #3366aa;
+/** Go to Deepl Translation ボタン */
+export const DeeplButton = styled(CopyClipButton)`
+    background-color: #0F2B46;
     margin-left: 24px;
 `
 

@@ -3,7 +3,7 @@ import * as React from "react"
 import { ToastContainer, toast, Slide } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-import { MainArea, RightArrow, TextAreaContainer, StyledTextArea, HorizontalFlex, Centering, CopyClipButton, GoogleButton, PlaceHolderForStyledTextArea, ClearButton} from "./styled"
+import { MainArea, RightArrow, TextAreaContainer, StyledTextArea, HorizontalFlex, Centering, CopyClipButton, DeeplButton, PlaceHolderForStyledTextArea, ClearButton} from "./styled"
 
 export default () => {
 
@@ -38,7 +38,7 @@ export default () => {
 
         let regStr: RegExp
         if(isChrome){
-            regStr = new RegExp("(?<!al)(?<!e.g)(?<!i.e)\\. ")
+            regStr = new RegExp("(?<!al)(?<!vs)(?<!e.g)(?<!i.e)\\. ")
         } else {
             regStr = new RegExp("\\. ")
         }
@@ -68,13 +68,13 @@ export default () => {
 
 
     /**
-     * Google翻訳へのリンクへ飛ぶ
+     * Deepl翻訳へのリンクへ飛ぶ
      * @param input 翻訳文字列
      */
-    const gotoGoogleTranslate = (input?: string) => {
+    const gotoDeeplTranslate = (input?: string) => {
         if( !input )return
         const transStr = encodeURIComponent(input)
-        const transURL = `https://translate.google.com/?hl=ja#view=home&op=translate&sl=en&tl=ja&text=${transStr}`
+        const transURL = `https://www.deepl.com/translator#en/ja/${transStr}`
         window.open(transURL, '_blank')
     }
 
@@ -184,9 +184,9 @@ export default () => {
                 <CopyClipButton onClick={() => copyClip(formatStrings)}>
                     Copy
                 </CopyClipButton>
-                <GoogleButton onClick={() => gotoGoogleTranslate(formatStrings)}>
+                <DeeplButton onClick={() => gotoDeeplTranslate(formatStrings)}>
                     Translate
-                </GoogleButton>
+                </DeeplButton>
             </HorizontalFlex>
             <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
                 <p>
@@ -195,7 +195,7 @@ export default () => {
                     
                 <ul>
                     <li>Copyボタンでクリップボードへコピーできます</li>
-                    <li>TranslateボタンからGoogle翻訳へ飛びます</li>
+                    <li>TranslateボタンからDeepl翻訳へ飛びます</li>
                 </ul>
             </PlaceHolderForStyledTextArea>
             <StyledTextArea 
