@@ -5,6 +5,35 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { MainArea, RightArrow, TextAreaContainer, StyledTextArea, HorizontalFlex, Centering, CopyClipButton, DeeplButton, PlaceHolderForStyledTextArea, ClearButton} from "./styled"
 
+export const Adsense = ( props: any ) => {
+    const { currentPath } = props
+    
+    React.useEffect(() => {
+        if (window) {
+            window.adsbygoogle = window.adsbygoogle || []
+            window.adsbygoogle.push({})
+            // (adsbygoogle = window.adsbygoogle || []).push({});
+        }
+    }, [currentPath])
+  
+    return (
+        <>
+            <ins
+                className="adsbygoogle"
+                style={{ 
+                    display: 'block',
+                    width: '100%',
+                    marginTop: '20px',
+                    height: '35vh'
+                }}
+                data-ad-client="ca-pub-7365926503878687"
+                data-ad-slot="3257229592"
+                data-ad-format="auto"
+                data-full-width-responsive="true" />
+        </>
+    )
+}
+
 export default () => {
 
     const [inputStrings, setInputStrings] = React.useState("")
@@ -222,10 +251,14 @@ export default () => {
                 </ul>
             </PlaceHolderForStyledTextArea>
             <StyledTextArea 
+                style={{
+                    height: '35vh'
+                }}
                 value={texStrings}
                 readOnly={true}
                 id={"output"}
             />
+            <Adsense/>
         </TextAreaContainer>
     </MainArea>
 }
