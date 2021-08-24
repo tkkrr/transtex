@@ -251,14 +251,11 @@ export default () => {
                 </ul>
             </PlaceHolderForStyledTextArea>
             <StyledTextArea 
-                style={{
-                    height: '35vh'
-                }}
                 value={texStrings}
                 readOnly={true}
                 id={"output"}
             />
-            <Adsense/>
+            {/* <Adsense/> */}
         </TextAreaContainer>
     </MainArea>
 }
