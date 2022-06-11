@@ -349,11 +349,6 @@ ${this.state.fileContent}
                 </TextAreaContainer>
                 <RightArrow/>
                 <TextAreaContainer>
-                    <HorizontalFlex>
-                        <CopyClipButton onClick={e => this.copyClip(this.formatoutput())}>
-                            Copy
-                        </CopyClipButton>
-                    </HorizontalFlex>
                     <StyledTextArea
                         readOnly
                         value={this.formatoutput()}

@@ -34,6 +34,85 @@ export const Adsense = ( props: any ) => {
     )
 }
 
+
+interface textAreas {
+    left?: React.ReactNode,
+    center?: React.ReactNode,
+    right?: React.ReactNode
+}
+
+/**
+ * 境界線を移動できる3つのエリアを提供
+ */
+const ResizableThreeArea: React.FC<textAreas> = props => {
+    const [startPosX1, setStartPosX1] = React.useState(0)
+    const [startPosX2, setStartPosX2] = React.useState(0)
+    const [delta1X, setDelta1X] = React.useState(0)
+    const [delta2X, setDelta2X] = React.useState(0)
+    const [isDragging1, setDragging1] = React.useState(false)
+    const [isDragging2, setDragging2] = React.useState(false)
+
+    const div1Ref: React.LegacyRef<HTMLDivElement> = React.useRef(null)
+    const div2Ref: React.LegacyRef<HTMLDivElement> = React.useRef(null)
+
+    React.useEffect(() => {
+        // 境界線の初期位置を保存する
+        if (!div1Ref.current) return
+        setStartPosX1(div1Ref.current.getBoundingClientRect().left)
+        if (!div2Ref.current) return
+        setStartPosX2(div2Ref.current.getBoundingClientRect().left)
+
+        // ウィンドウサイズが変更されたときも，境界線の初期位置を記憶する
+        window.addEventListener('resize', () => {
+            if (!div1Ref.current) return
+            setStartPosX1(div1Ref.current.getBoundingClientRect().left)
+            if (!div2Ref.current) return
+            setStartPosX2(div2Ref.current.getBoundingClientRect().left)
+        });
+    }, [])
+
+    // 2つのテキストエリアの境界線を移動するためhandler
+    const dragHandler: React.MouseEventHandler = (ev) => {
+        ev.preventDefault()
+        if(isDragging1) setDelta1X(ev.clientX - startPosX1)
+        if(isDragging2) setDelta2X(ev.clientX - startPosX2)
+    }
+
+    // 親要素内であれば，境界線を移動できる
+    return <div style={{height: "100%", width: "100%", display: "flex"}}
+        onMouseMove={ev => { if(isDragging1 || isDragging2) dragHandler(ev) }}
+        onMouseUp={() => {
+            setDragging1(false)
+            setDragging2(false)
+        }}>
+        <div style={{width: `calc(34% + ${delta1X}px)`, minWidth: "250px"}}>
+            {props.left}
+        </div>
+        <div style={{
+                height: "100%", width: "5px", cursor: "col-resize", background: "#333",
+                display: "flex", justifyContent: "center", alignItems: "center"
+            }} 
+            ref={div1Ref}
+            onMouseDown={() => setDragging1(true)}>
+            <RightArrow></RightArrow>
+        </div>
+        <div style={{width: `calc(33% - ${delta1X}px - 5px + ${delta2X}px)`, minWidth: "250px"}}>
+            {props.center}
+        </div>
+        <div style={{
+                height: "100%", width: "5px", cursor: "col-resize", background: "#333",
+                display: "flex", justifyContent: "center", alignItems: "center"
+            }}
+            ref={div2Ref}
+            onMouseDown={() => setDragging2(true)}>
+            <RightArrow></RightArrow>
+        </div>
+        <div style={{width: `calc(33% - ${delta2X}px - 5px)`, minWidth: "250px"}}>
+            {props.right}
+        </div>
+    </div>
+}
+
 export default () => {
 
     const [inputStrings, setInputStrings] = React.useState("")
@@ -177,85 +256,88 @@ export default () => {
     }
 
     return <MainArea>
+        <ToastContainer />
         <TextAreaContainer>
-            <HorizontalFlex>
-                <ClearButton onClick={() => trans2tex("")}>
-                    Clear
-                </ClearButton>
-            </HorizontalFlex>
-            <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
-                <p>
-                    変換したい文章を入力してください or<br/>
-                    英語論文PDFの文章をコピペしてください
-                </p>
-                    
-                <ul>
-                    <li>TeansTexにてフォーマットする文章例 ↓
-                        <ul>
-                            <li>1行ごとに改行が入ってしまう文章</li>
-                            <li>行末にハイフネーションがある文</li>
-                            <li>「’」と「'」が混ざっている文章</li>
-                        </ul>
-                    </li>
-                </ul>
-            </PlaceHolderForStyledTextArea>
-            <StyledTextArea
-                value={inputStrings}
-                onChange={e => trans2tex(e.target.value)}
-            />
-        </TextAreaContainer>
-        <Centering>
-            <RightArrow/>
-            <ToastContainer />
-        </Centering>
-        <TextAreaContainer>
-            <HorizontalFlex>
-                <CopyClipButton onClick={() => copyClip(formatStrings)}>
-                    Copy
-                </CopyClipButton>
-                <DeeplButton onClick={() => gotoDeeplTranslate(formatStrings)}>
-                    Translate
-                </DeeplButton>
-            </HorizontalFlex>
-            <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
-                <p>
-                    フォーマットされた文章がここに表示されます
-                </p>
-                    
-                <ul>
-                    <li>Copyボタンでクリップボードへコピーできます</li>
-                    <li>TranslateボタンからDeepl翻訳へ飛びます</li>
-                </ul>
-            </PlaceHolderForStyledTextArea>
-            <StyledTextArea 
-                // placeholder={secondPlaceHolder}
-                value={formatStrings}
-                readOnly={true}
-                // id={"strings"}
-            />
-        </TextAreaContainer>
-        <TextAreaContainer>
-            <HorizontalFlex>
-                <CopyClipButton onClick={() => copyClip(texStrings)}>
-                    Copy
-                </CopyClipButton>
-            </HorizontalFlex>
-            <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
-                <p>
-                    テンプレートに合わせた文章が表示されます<br/>
-                    （例：{"\\newsentence{ [入力した文章] }{}"}）
-                </p>
-                    
-                <ul>
-                    <li>Copyボタンでクリップボードへコピーできます</li>
-                </ul>
-            </PlaceHolderForStyledTextArea>
-            <StyledTextArea 
-                value={texStrings}
-                readOnly={true}
-                id={"output"}
-            />
-            {/* <Adsense/> */}
+            <ResizableThreeArea 
+                left={<>
+                    <div style={{position: "relative", width: "100%", height: "100%"}}>
+                        <HorizontalFlex>
+                            <ClearButton onClick={() => trans2tex("")}>
+                                Clear
+                            </ClearButton>
+                        </HorizontalFlex>
+                        <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
+                            <p>
+                                変換したい文章を入力してください or<br/>
+                                英語論文PDFの文章をコピペしてください
+                            </p>
+                                
+                            <ul>
+                                <li>TeansTexにてフォーマットする文章例 ↓
+                                    <ul>
+                                        <li>1行ごとに改行が入ってしまう文章</li>
+                                        <li>行末にハイフネーションがある文</li>
+                                        <li>「’」と「'」が混ざっている文章</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </PlaceHolderForStyledTextArea>
+                        <StyledTextArea
+                            value={inputStrings}
+                            onChange={e => trans2tex(e.target.value)}
+                        />
+                    </div>
+                </>}
+                center={<>
+                    <div style={{position: "relative", width: "100%", height: "100%"}}>
+                        <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
+                            <p>
+                                フォーマットされた文章がここに表示されます
+                            </p>
+                                
+                            <ul>
+                                <li>Copyボタンでクリップボードへコピーできます</li>
+                                <li>TranslateボタンからDeepl翻訳へ飛びます</li>
+                            </ul>
+                        </PlaceHolderForStyledTextArea>
+                        <StyledTextArea 
+                            value={formatStrings}
+                            readOnly={true}
+                        />
+                        <HorizontalFlex>
+                            <CopyClipButton onClick={() => copyClip(formatStrings)}>
+                                Copy
+                            </CopyClipButton>
+                            <DeeplButton onClick={() => gotoDeeplTranslate(formatStrings)}>
+                                Translate
+                            </DeeplButton>
+                        </HorizontalFlex>
+                    </div>
+                </>}
+                right={<>
+                    <div style={{position: "relative", width: "100%", height: "100%"}}>
+                        <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
+                            <p>
+                                テンプレートに合わせた文章が表示されます<br/>
+                                （例：{"\\newsentence{ [入力した文章] }{}"}）
+                            </p>
+                                
+                            <ul>
+                                <li>Copyボタンでクリップボードへコピーできます</li>
+                            </ul>
+                        </PlaceHolderForStyledTextArea>
+                        <StyledTextArea 
+                            value={texStrings}
+                            readOnly={true}
+                            id={"output"}
+                        />
+                        <HorizontalFlex >
+                            <CopyClipButton onClick={() => copyClip(texStrings)}>
+                                Copy
+                            </CopyClipButton>
+                        </HorizontalFlex>
+                    </div>
+                </>}/>
         </TextAreaContainer>
     </MainArea>
 }

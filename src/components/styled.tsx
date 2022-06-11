@@ -33,8 +33,7 @@ export const RightArrow = styled.div`
 
 /** テキストエリアのコンテナ． */
 export const TextAreaContainer = styled.div`
-    width: 28%;
-    margin: 24px auto;
+    width: 100%;
     align-self: stretch;
     display: flex;
     flex-direction: column;
@@ -48,9 +47,7 @@ export const StyledTextArea = styled.textarea`
     width: 100%;
     height: 100%;
     padding: 12px;
-    border-radius: 12px;
     border: none;
-    box-shadow: 2px 2px 12px #ccc;  
     font-size: 16px;
     resize: none;
     outline: none;
@@ -59,6 +56,11 @@ export const StyledTextArea = styled.textarea`
 
 /** flexboxのレイアウトを使用 */
 export const HorizontalFlex = styled.div`
+    position: absolute;
+    z-index: 10;
+    bottom: 0;
+    padding: 16px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
     width: 100%;
@@ -71,8 +73,9 @@ export const PlaceHolderForStyledTextArea = styled.div`
     position: absolute;
     font-size: 14px;
     font-weight: normal;
-    width: 24%;
-    height: calc(100% - 154px * 2);
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
     p {
         line-height: 1.4;
         margin-bottom: 1rem;
