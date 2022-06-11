@@ -1,5 +1,6 @@
 import * as React from "react"
 import styled from "styled-components"
+import { useStaticQuery, graphql } from "gatsby"
 import {footer_size} from "./variables"
 
 const Footer = styled.footer`
@@ -16,8 +17,19 @@ const Footer = styled.footer`
 `
 
 export default () => {
+    // 最終ビルド日をフッターに埋め込む．
+    // 最終ビルド日は gatsby-config.js にて設定
+    const { site } = useStaticQuery( graphql`query {
+        site {
+            siteMetadata {
+                lastModified
+            }
+        }
+    }`)
+    const lastModified = new Date(site.siteMetadata.lastModified)
+
     return <Footer>
         <p>Created by Tucker.</p>
-        <p>Last Modified 2021 August.</p>
+        <p>Last Modified {lastModified.toLocaleString('en-US', { year: 'numeric', month: 'long' })}.</p>
     </Footer>
 }

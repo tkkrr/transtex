@@ -3,7 +3,8 @@ module.exports = {
         title: `TransTex`,
         siteUrl: `https://transtex.netlify.com/`,
         description: `For the IPLAB Utility`,
-        author: `Tucker`
+        author: `Tucker`,
+        lastModified: Date.now()
     },
     plugins: [
         `gatsby-plugin-react-helmet`,
