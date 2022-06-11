@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Helmet from 'react-helmet'
 import { StaticQuery, graphql } from 'gatsby'
+import { getSrc } from 'gatsby-plugin-image'
 
 type seoProps = {
     description?: string,
@@ -18,7 +19,7 @@ const SEO: React.StatelessComponent<seoProps> = props => {
         query={detailsQuery}
         render={data => {
             const metaDescription = props.description || data.site.siteMetadata.description
-            const imagePath = props.image || data.image.childImageSharp.fixed.src
+            const imagePath = props.image || getSrc(data.image)
             const socialTitle = `${props.title} | ${data.site.siteMetadata.title}`
             const sitePath = `https://transtex.netlify.com${props.path}`
             return (
@@ -112,10 +113,8 @@ const detailsQuery = graphql`
     },
     image:file(relativePath: {eq: "image.jpg"}) {
       childImageSharp{
-          fixed {
-              src
-          }
+        gatsbyImageData
       }
-  },
+    },
   }
 `
