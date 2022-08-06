@@ -171,7 +171,6 @@ export default () => {
 {${item}${item.slice(-1) === "." ? "" : "."}}
 {}`)
         })
-        setTexStrings(out.join("\n\n"))
     }
 
 
@@ -184,6 +183,23 @@ export default () => {
         const transStr = encodeURIComponent(input)
         const transURL = `https://www.deepl.com/translator#en/ja/${transStr}`
         window.open(transURL, '_blank')
+    }
+
+    /**
+     * TexTraから翻訳結果を取得する
+     * @param input 翻訳文字列
+     */
+    const doTranslateLocal = async (input?: string) => {
+        if( !input )return
+        setTexStrings("現在翻訳中です...")
+
+        const data = await fetch("/.netlify/functions/translate", {
+            method: "POST",
+            body: input
+        })
+        .then(res => res.text())
+
+        setTexStrings(data)
     }
 
 
@@ -296,8 +312,8 @@ export default () => {
                             </p>
                                 
                             <ul>
-                                <li>Copyボタンでクリップボードへコピーできます</li>
-                                <li>TranslateボタンからDeepl翻訳へ飛びます</li>
+                                <li>Translate (Loacl)を押すと，右エリアに翻訳文で出力されます</li>
+                                <li>Translate (DeepL)を押すと，Deepl翻訳へ飛びます</li>
                             </ul>
                         </PlaceHolderForStyledTextArea>
                         <StyledTextArea 
@@ -305,11 +321,11 @@ export default () => {
                             readOnly={true}
                         />
                         <HorizontalFlex>
-                            <CopyClipButton onClick={() => copyClip(formatStrings)}>
-                                Copy
+                            <CopyClipButton onClick={() => doTranslateLocal(formatStrings)}>
+                                Translate (Local)
                             </CopyClipButton>
                             <DeeplButton onClick={() => gotoDeeplTranslate(formatStrings)}>
-                                Translate
+                                Translate (DeepL)
                             </DeeplButton>
                         </HorizontalFlex>
                     </div>
@@ -318,8 +334,8 @@ export default () => {
                     <div style={{position: "relative", width: "100%", height: "100%"}}>
                         <PlaceHolderForStyledTextArea hidden={!!formatStrings}>
                             <p>
-                                テンプレートに合わせた文章が表示されます<br/>
-                                （例：{"\\newsentence{ [入力した文章] }{}"}）
+                                中央エリアのTranslate (Local) ボタンを押すと，<br/>
+                                ここに翻訳文が出力されます
                             </p>
                                 
                             <ul>
