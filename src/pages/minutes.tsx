@@ -8,16 +8,6 @@ import { MainArea, TextAreaContainer, StyledTextArea, HorizontalFlex, LineInput,
 
 const weekday = ["日","月","火","水","木","金","土"]
 
-interface MinutesState {
-    date: Date,
-    time: string,
-    presenter: string,
-    chairman: string,
-    minutes: string,
-    file?: File,
-    fileContent: string,
-}
-
 // 文字列に対して{}の対応が取れているインデックス(入力文字列からステップした回数)を返す
 const stackCheck = (str: string, offset=0): {step: number, correct: boolean} => {
     const count = [] as string[]
@@ -75,26 +65,22 @@ const checkBracesSplit = (str: string): string[] => {
     return stack
 }
 
-export default class Minutes extends React.Component<{},MinutesState> {
+const Minutes = (props: any) => {
     // const [date, changeDate] = React.useState(new Date())
-    constructor(props: any){
-        super(props)
-        this.state = {
-            date: new Date(),
-            time: `${new Date().getHours()}:${("0" + new Date().getMinutes()).slice(-2)}`,
-            presenter: "",
-            chairman: "",
-            minutes: "",
-            fileContent: ""
-        }
-    }
+    const [date, setDate] = React.useState(new Date())
+    const [time, setTime] = React.useState(`${new Date().getHours()}:${("0" + new Date().getMinutes()).slice(-2)}`)
+    const [presenter, setPresenter] = React.useState("")
+    const [chairman, setChairman] = React.useState("")
+    const [minutes, setMinutes] = React.useState("")
+    const [fileContent, setFileContent] = React.useState("")
+    const [fileName, setFileName] = React.useState("")
 
     /**
      * トースト通知を行う
      * @param status メッセージの種類
      * @param message メッセージ本文
      */
-    notify = (status: "info" | "error" | "success", message: string) => {
+    const notify = (status: "info" | "error" | "success", message: string) => {
         switch(status){
             case "info":
                 toast.info(message, {
@@ -133,7 +119,7 @@ export default class Minutes extends React.Component<{},MinutesState> {
      * クリップボードに文字列をコピーする
      * @param string コピーする文字列
      */
-    copyClip = (string: string) => {
+    const copyClip = (string: string) => {
         var temp = document.createElement('textarea');
 
         temp.value = string;
@@ -150,35 +136,33 @@ export default class Minutes extends React.Component<{},MinutesState> {
         temp.blur();
         document.body.removeChild(temp);
 
-        this.notify(
+        notify(
             result ? "success" : "error", 
             result ? "Copy to Clipboard is Successful !!"
                    : "Oops... Something wrong..."
         )
     }
 
-    handleChange = (e: Date|Date[]) => {
+    const handleChange = (e: Date|Date[]) => {
         if(e instanceof Date){
-            this.setState({
-                date: e
-            })
+            setDate(e)
         }else{
             console.log(e)
         }
     }
 
-    handleInputChange = (state: "time" | "presenter" | "chairman" | "minutes", str?: string) => {
+    const handleInputChange = (state: "time" | "presenter" | "chairman" | "minutes", str?: string) => {
         const nonNullStr = str || ""
         switch(state){
-            case "time": this.setState({ time: nonNullStr }); break;
-            case "presenter": this.setState({ presenter: nonNullStr }); break;
-            case "chairman": this.setState({ chairman: nonNullStr }); break;
-            case "minutes": this.setState({ minutes: nonNullStr }); break;
+            case "time": setTime(nonNullStr); break;
+            case "presenter": setPresenter(nonNullStr); break;
+            case "chairman": setChairman(nonNullStr); break;
+            case "minutes": setMinutes(nonNullStr); break;
             default: break;
         }
     }
 
-    handleFileUpload = (files: FileList | null) => {
+    const handleFileUpload = (files: FileList | null) => {
         if(files){
             const upload_file = files.item(0)
             if(upload_file){
@@ -231,11 +215,9 @@ export default class Minutes extends React.Component<{},MinutesState> {
                         }
                     } )
 
-                    this.setState({
-                        file: upload_file,
-                        fileContent: formatter3.join(""),
-                        date: new Date( parseInt( upload_file.name.slice(-12,-8) ), parseInt( upload_file.name.slice(-8,-6) )-1, parseInt( upload_file.name.slice(-6,-4) ))
-                    })
+                    setFileContent(formatter3.join(""))
+                    setFileName(upload_file.name)
+                    setDate(new Date( parseInt( upload_file.name.slice(-12,-8) ), parseInt( upload_file.name.slice(-8,-6) )-1, parseInt( upload_file.name.slice(-6,-4) )))
                 }
                 reader.readAsText(upload_file)
             }
@@ -243,14 +225,14 @@ export default class Minutes extends React.Component<{},MinutesState> {
     }
 
 
-    formatoutput = () => {
-        return `* ${this.state.date.getFullYear()}年${this.state.date.getMonth()+1}月${this.state.date.getDate()}日(${weekday[this.state.date.getDay()]})
-開始：${this.state.time}
+    const formatoutput = () => {
+        return `* ${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日(${weekday[date.getDay()]})
+開始：${time}
 終了：
 
-発表者：${this.state.presenter}
-司会：${this.state.chairman}
-議事録：${this.state.minutes}
+発表者：${presenter}
+司会：${chairman}
+議事録：${minutes}
 欠席：
 遅刻：
 
@@ -268,95 +250,95 @@ export default class Minutes extends React.Component<{},MinutesState> {
 論文：
 
 ** 発表
-${this.state.fileContent}
+${fileContent}
 `
     }
 
-    render() {
-        return <Layout>
-            <SEO
-                title="Minutes"
-                path="/minutes"
-                description="議事録のためのフォーマット．For the IPLAB Utility"
-            />
-            <MainArea>
-                <TextAreaContainer>
-                    <StyledTable >
-                        <tbody>
-                        <tr>
-                            <td>
-                                TeX
-                            </td>
-                            <td>
-                                <FileInputLabel htmlFor="file_uploader">
-                                    {this.state.file ? this.state.file.name : "TeXファイルを選択"}
-                                    <input type="file" id="file_uploader" style={{display: "none"}}
-                                        onChange={e => this.handleFileUpload(e.target.files)}
-                                    />
-                                </FileInputLabel>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                開始時刻
-                            </td>
-                            <td>
-                                <LineInput
-                                    type="text"
-                                    value={this.state.time}
-                                    onChange={e => this.handleInputChange("time", e.target.value)}
+    
+    return <Layout>
+        <MainArea>
+            <TextAreaContainer>
+                <StyledTable >
+                    <tbody>
+                    <tr>
+                        <td>
+                            TeX
+                        </td>
+                        <td>
+                            <FileInputLabel htmlFor="file_uploader">
+                                {fileName || "TeXファイルを選択"}
+                                <input type="file" id="file_uploader" style={{display: "none"}}
+                                    onChange={e => handleFileUpload(e.target.files)}
                                 />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                発表者
-                            </td>
-                            <td>
-                                <LineInput
-                                    type="text"
-                                    value={this.state.presenter}
-                                    onChange={e => this.handleInputChange("presenter", e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                司会
-                            </td>
-                            <td>
-                                <LineInput
-                                    type="text"
-                                    value={this.state.chairman}
-                                    onChange={e => this.handleInputChange("chairman", e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                議事録
-                            </td>
-                            <td>
-                                <LineInput
-                                    type="text"
-                                    value={this.state.minutes}
-                                    onChange={e => this.handleInputChange("minutes", e.target.value)}
-                                />
-                            </td>
-                        </tr>
-                        </tbody>
-                    </StyledTable>
-                </TextAreaContainer>
-                <RightArrow/>
-                <TextAreaContainer>
-                    <StyledTextArea
-                        readOnly
-                        value={this.formatoutput()}
-                        style={{fontSize: "10px"}}
-                    />
-                </TextAreaContainer>
-            </MainArea>
-            <ToastContainer/>
-        </Layout>
-    }
+                            </FileInputLabel>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            開始時刻
+                        </td>
+                        <td>
+                            <LineInput
+                                type="text"
+                                value={time}
+                                onChange={e => handleInputChange("time", e.target.value)}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            発表者
+                        </td>
+                        <td>
+                            <LineInput
+                                type="text"
+                                value={presenter}
+                                onChange={e => handleInputChange("presenter", e.target.value)}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            司会
+                        </td>
+                        <td>
+                            <LineInput
+                                type="text"
+                                value={chairman}
+                                onChange={e => handleInputChange("chairman", e.target.value)}
+                            />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            議事録
+                        </td>
+                        <td>
+                            <LineInput
+                                type="text"
+                                value={minutes}
+                                onChange={e => handleInputChange("minutes", e.target.value)}
+                            />
+                        </td>
+                    </tr>
+                    </tbody>
+                </StyledTable>
+            </TextAreaContainer>
+            <RightArrow/>
+            <TextAreaContainer>
+                <StyledTextArea
+                    readOnly
+                    value={formatoutput()}
+                    style={{fontSize: "10px"}}
+                />
+            </TextAreaContainer>
+        </MainArea>
+        <ToastContainer/>
+    </Layout>
+}
+
+export default Minutes
+
+export const Head = () => {
+    return <SEO title="Minutes" path="/minutes" description="議事録のためのフォーマット．For the IPLAB Utility" />
 }

@@ -2,6 +2,7 @@
 public/
 node_modules/
 *.ai
-functions
 setup.sh
 sample.txt
+# Local Netlify folder
+.netlify

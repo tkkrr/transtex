@@ -13,12 +13,12 @@ interface indexProps {
 
 const Index: React.FunctionComponent<indexProps> = props => {
     return <Layout>
-        <SEO
-            title="transtex"
-            path="/"
-        />
         <MainArea />
     </Layout>
 }
 
 export default Index
+
+export const Head = () => {
+    return <SEO title="transtex" path="/"/>
+}
