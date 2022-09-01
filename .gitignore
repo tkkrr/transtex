@@ -6,3 +6,4 @@ setup.sh
 sample.txt
 # Local Netlify folder
 .netlify
+.env.development
