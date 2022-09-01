@@ -5,7 +5,9 @@
   "main": "index.tsx",
   "scripts": {
     "start": "gatsby develop",
-    "build": "gatsby build"
+    "build": "gatsby build",
+    "netlify:dev": "netlify dev",
+    "netlify:functions": "netlify functions:serve"
   },
   "author": "tucker",
   "license": "ISC",
@@ -23,6 +25,7 @@
     "gatsby-plugin-styled-components": "^5.22.0",
     "gatsby-source-filesystem": "^4.22.0",
     "gatsby-transformer-sharp": "^4.22.0",
+    "netlify-cli": "^11.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-toastify": "^9.0.8",
