@@ -171,6 +171,7 @@ export default () => {
 {${item}${item.slice(-1) === "." ? "" : "."}}
 {}`)
         })
+        setTexStrings(out.join("\n"))
     }
 
 
@@ -199,7 +200,11 @@ export default () => {
         })
         .then(res => res.text())
 
-        setTexStrings(data)
+        if( data === "" ){
+            setTexStrings("翻訳に失敗しました。")
+        } else {
+            setTexStrings(data)
+        }
     }
 
 
