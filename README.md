@@ -25,7 +25,7 @@ $ npm start
 
 ## Netlify Functions込みの動作確認
 TransTexでは[TexTra](https://mt-auto-minhon-mlt.ucri.jgn-x.jp)と[Netlify Functions](https://www.netlify.com/products/functions/)利用した簡易翻訳機能を導入しています．
-簡易検索機能の部分を開発する場合，開発サーバとしてNetlify Devを使用します．
+簡易翻訳機能の部分を開発する場合，開発サーバとしてNetlify Devを使用します．
 
 ```bash
 # TexTra用の環境変数を用意します
